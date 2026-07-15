@@ -1,0 +1,106 @@
+.report-page {
+  max-width: 960px;
+}
+
+.report-actions {
+  margin-bottom: 20px;
+}
+
+.incident-report {
+  padding: 34px;
+  color: var(--text-primary);
+
+  header {
+    display: flex;
+    gap: 14px;
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 18px;
+    margin-bottom: 18px;
+  }
+
+  section {
+    break-inside: avoid;
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 14px 0;
+  }
+
+  dl div {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 10px;
+    overflow-wrap: anywhere;
+  }
+
+  dt {
+    color: var(--text-muted);
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+.report-toggle {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+
+  input {
+    width: auto;
+  }
+}
+
+@media print {
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .app-header,
+  .app-footer,
+  .report-actions,
+  .report-toggle {
+    display: none !important;
+  }
+
+  .page-container {
+    width: auto;
+    padding: 0;
+    margin: 0;
+  }
+
+  .incident-report {
+    box-shadow: none;
+    border: 0;
+    background: #fff;
+    color: #000;
+    padding: 0;
+    font-size: 11pt;
+  }
+
+  .incident-report p,
+  .incident-report dt {
+    color: #111;
+  }
+
+  a {
+    color: #000;
+  }
+
+  @page {
+    size: A4;
+    margin: 16mm;
+  }
+}
+
+@media (max-width: 560px) {
+  .incident-report {
+    padding: 20px;
+
+    header,
+    dl div {
+      grid-template-columns: 1fr;
+      display: grid;
+    }
+  }
+}

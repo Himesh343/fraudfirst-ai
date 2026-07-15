@@ -1,0 +1,11 @@
+@mixin panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)), var(--surface-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+@mixin focus-ring {
+  outline: 3px solid rgba(32, 203, 216, 0.4);
+  outline-offset: 3px;
+}
