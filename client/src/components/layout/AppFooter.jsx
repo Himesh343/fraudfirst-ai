@@ -1,7 +1,10 @@
+import { useTranslation } from "react-i18next";
+
 export function AppFooter() {
+  const { t } = useTranslation();
   return (
     <footer className="app-footer">
-      <p>FraudFirst provides AI-assisted guidance and does not replace banks, law enforcement or official cybercrime authorities.</p>
+      <p>{t("footer.disclaimer")}</p>
     </footer>
   );
 }

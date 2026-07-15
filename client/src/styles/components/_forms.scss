@@ -158,3 +158,9 @@ textarea {
     grid-template-columns: 1fr;
   }
 }
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.78;
+}

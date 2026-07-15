@@ -1,19 +1,21 @@
 import { CheckCircle, HelpCircle, ListPlus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const groups = [
-  ["Evidence found", "found", CheckCircle],
-  ["Missing evidence", "missing", HelpCircle],
-  ["Recommended evidence", "recommended", ListPlus]
+  ["results.evidenceFound", "found", CheckCircle],
+  ["results.missingEvidence", "missing", HelpCircle],
+  ["results.recommendedEvidence", "recommended", ListPlus]
 ];
 
 export function EvidenceChecklist({ evidence }) {
+  const { t } = useTranslation();
   return (
     <section className="result-panel">
-      <h2>Evidence checklist</h2>
+      <h2>{t("results.evidenceChecklist")}</h2>
       <div className="evidence-groups">
-        {groups.map(([title, key, Icon]) => (
+        {groups.map(([titleKey, key, Icon]) => (
           <article key={key}>
-            <h3><Icon size={18} aria-hidden="true" />{title}</h3>
+            <h3><Icon size={18} aria-hidden="true" />{t(titleKey)}</h3>
             <ul>
               {evidence[key].map((item) => (
                 <li key={`${key}-${item.label}`}>

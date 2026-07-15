@@ -1,14 +1,11 @@
 import { AlertTriangle, ShieldAlert, ShieldCheck } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { StatusBadge } from "../common/StatusBadge.jsx";
 
-const riskIcon = {
-  low: ShieldCheck,
-  medium: ShieldAlert,
-  high: AlertTriangle,
-  critical: AlertTriangle
-};
+const riskIcon = { low: ShieldCheck, medium: ShieldAlert, high: AlertTriangle, critical: AlertTriangle };
 
 export function RiskSummary({ analysis }) {
+  const { t } = useTranslation();
   const Icon = riskIcon[analysis.risk.level] || ShieldAlert;
   return (
     <section className={`result-panel risk-panel risk-${analysis.risk.level}`}>
@@ -18,7 +15,7 @@ export function RiskSummary({ analysis }) {
           <h2>{analysis.risk.label}</h2>
           <p>{analysis.suspectedScam.category}</p>
         </div>
-        <StatusBadge tone={analysis.risk.level}>{analysis.risk.confidence} confidence</StatusBadge>
+        <StatusBadge tone={analysis.risk.level}>{t("results.confidence", { confidence: analysis.risk.confidence })}</StatusBadge>
       </div>
       <p>{analysis.risk.summary}</p>
       <div className="indicator-grid">

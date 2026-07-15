@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { useTranslation } from "react-i18next";
 import { Route, Routes } from "react-router-dom";
 import { AppHeader } from "./components/layout/AppHeader.jsx";
 import { AppFooter } from "./components/layout/AppFooter.jsx";
@@ -12,12 +13,13 @@ const ResultsPage = lazy(() => import("./pages/ResultsPage.jsx"));
 const ReportPage = lazy(() => import("./pages/ReportPage.jsx"));
 
 export default function App() {
+  const { t } = useTranslation();
   useRouteFocus();
   return (
     <div className="app-shell">
       <AppHeader />
       <main id="main-content" tabIndex="-1">
-        <Suspense fallback={<LoadingState message="Loading FraudFirst" />}>
+        <Suspense fallback={<LoadingState message={t("check.loading.0")} />}>
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/check" element={<CheckPage />} />

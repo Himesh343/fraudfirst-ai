@@ -1,11 +1,13 @@
 import { CheckCircle2, Circle } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function ActionChecklist({ actions }) {
   const [done, setDone] = useState({});
+  const { t } = useTranslation();
   return (
     <section className="result-panel">
-      <h2>Immediate actions</h2>
+      <h2>{t("results.immediateActions")}</h2>
       <ul className="action-checklist">
         {actions.map((action) => (
           <li key={action.priority} className={action.urgent ? "urgent" : ""}>

@@ -1,5 +1,6 @@
 import { Copy, FileText, Pencil, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/common/Button.jsx";
 import { EmptyState } from "../components/common/EmptyState.jsx";
@@ -14,14 +15,14 @@ import { OfficialHelpCard } from "../components/results/OfficialHelpCard.jsx";
 import { RiskSummary } from "../components/results/RiskSummary.jsx";
 import { clearSessionData, getAnalysis } from "../utils/storage.js";
 
-function buildSummary(analysis) {
+function buildSummary(analysis, t) {
   return [
-    `Risk summary: ${analysis.risk.label} (${analysis.risk.confidence} confidence). ${analysis.risk.summary}`,
-    `Suspected scam category: ${analysis.suspectedScam.category}`,
-    `Immediate actions: ${analysis.immediateActions.map((item) => `${item.priority}. ${item.title} - ${item.description}`).join(" ")}`,
-    `Extracted details: ${JSON.stringify(analysis.extractedDetails)}`,
-    `Missing evidence: ${analysis.evidence.missing.map((item) => item.label).join(", ") || "None listed"}`,
-    `Disclaimer: ${analysis.safetyDisclaimer}`
+    `${t("results.title")}: ${analysis.risk.label} (${analysis.risk.confidence}). ${analysis.risk.summary}`,
+    `${t("report.suspectedScam")}: ${analysis.suspectedScam.category}`,
+    `${t("results.immediateActions")}: ${analysis.immediateActions.map((item) => `${item.priority}. ${item.title} - ${item.description}`).join(" ")}`,
+    `${t("results.extractedDetails")}: ${JSON.stringify(analysis.extractedDetails)}`,
+    `${t("results.missingEvidence")}: ${analysis.evidence.missing.map((item) => item.label).join(", ") || t("common.notDetected")}`,
+    `${t("report.reportDisclaimer")}: ${analysis.safetyDisclaimer}`
   ].join("\n\n");
 }
 
@@ -30,17 +31,18 @@ export default function ResultsPage() {
   const [copied, setCopied] = useState(false);
   const headingRef = useRef(null);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     headingRef.current?.focus();
   }, []);
 
   if (!analysis) {
-    return <EmptyState title="No analysis yet" message="Complete an incident check before viewing results." actionLabel="Start incident check" to="/check" />;
+    return <EmptyState title={t("results.noAnalysisTitle")} message={t("results.noAnalysisMessage")} actionLabel={t("results.startIncidentCheck")} to="/check" />;
   }
 
   async function copySummary() {
-    await navigator.clipboard.writeText(buildSummary(analysis));
+    await navigator.clipboard.writeText(buildSummary(analysis, t));
     setCopied(true);
     window.setTimeout(() => setCopied(false), 2200);
   }
@@ -52,7 +54,7 @@ export default function ResultsPage() {
 
   return (
     <PageContainer className="results-page">
-      <h1 ref={headingRef} tabIndex="-1">AI-assisted incident results</h1>
+      <h1 ref={headingRef} tabIndex="-1">{t("results.title")}</h1>
       <EmergencyBanner analysis={analysis} />
       <div className="results-grid">
         <RiskSummary analysis={analysis} />
@@ -64,10 +66,10 @@ export default function ResultsPage() {
         <OfficialHelpCard prominent={analysis.moneyTransferred} />
       </div>
       <section className="result-actions" aria-live="polite">
-        <Button to="/report" icon={FileText}>Generate Incident Report</Button>
-        <Button type="button" variant="secondary" icon={Copy} onClick={copySummary}>{copied ? "Summary copied" : "Copy Summary"}</Button>
-        <Button type="button" variant="secondary" icon={RotateCcw} onClick={startNew}>Start New Check</Button>
-        <Button to="/check" variant="ghost" icon={Pencil}>Edit Details and Analyse Again</Button>
+        <Button to="/report" icon={FileText}>{t("results.generateReport")}</Button>
+        <Button type="button" variant="secondary" icon={Copy} onClick={copySummary}>{copied ? t("results.summaryCopied") : t("results.copySummary")}</Button>
+        <Button type="button" variant="secondary" icon={RotateCcw} onClick={startNew}>{t("common.startNewCheck")}</Button>
+        <Button to="/check" variant="ghost" icon={Pencil}>{t("results.editAgain")}</Button>
       </section>
     </PageContainer>
   );
