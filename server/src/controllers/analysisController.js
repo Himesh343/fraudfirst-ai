@@ -1,18 +1,64 @@
-import { validateAnalyzePayload } from "../schemas/requestSchema.js";
+import { randomUUID } from "node:crypto";
 import { analyzeIncident } from "../services/aiAnalysisService.js";
-import { AppError } from "../utils/errors.js";
+import { buildOfficialHelp, getSafetyDisclaimer } from "../utils/localizedSafetyContent.js";
+import { logger } from "../utils/logger.js";
 
-export async function analyzeController(req, res, next) {
-  const files = req.files || [];
-  const parsed = validateAnalyzePayload(req.body, files.length);
-  if (!parsed.success) {
-    return next(new AppError(parsed.error.issues[0]?.message || "Please check the submitted details.", 400, "INVALID_INPUT"));
-  }
+function sortActions(actions) {
+  return [...actions].sort((first, second) => first.priority - second.priority);
+}
+
+export async function validateIncidentAnalysis(req, res, next) {
+  const incident = req.incidentRequest;
+  const startedAt = Date.now();
+  const abortController = new AbortController();
+
+  const abortRequest = () => abortController.abort();
+  req.on("aborted", abortRequest);
+
+  logger.info("AI analysis request started", {
+    files: incident.evidenceFiles.length,
+    language: incident.preferredLanguage
+  });
 
   try {
-    const analysis = await analyzeIncident(parsed.data, files);
-    res.json({ analysis });
-  } catch (error) {
-    next(error);
+    const modelAnalysis = await analyzeIncident(incident, { signal: abortController.signal });
+    const moneyTransferred = incident.situationType === "money_transferred";
+
+    const response = {
+      analysisId: randomUUID(),
+      language: incident.preferredLanguage,
+      risk: modelAnalysis.risk,
+      suspectedScam: modelAnalysis.suspectedScam,
+      moneyTransferred,
+      extractedDetails: modelAnalysis.extractedDetails,
+      immediateActions: sortActions(modelAnalysis.immediateActions),
+      evidence: modelAnalysis.evidence,
+      timeline: modelAnalysis.timeline,
+      officialHelp: buildOfficialHelp(incident),
+      reportSummary: modelAnalysis.reportSummary,
+      limitations: modelAnalysis.limitations,
+      safetyDisclaimer: getSafetyDisclaimer(incident.preferredLanguage)
+    };
+
+    logger.info("AI analysis completed", {
+      files: incident.evidenceFiles.length,
+      status: 200,
+      durationMs: Date.now() - startedAt
+    });
+
+    res.status(200).json(response);
+  } catch (err) {
+    logger.info("AI analysis failed", {
+      code: err.code || "AI_ANALYSIS_FAILED",
+      status: err.statusCode || 500,
+      durationMs: Date.now() - startedAt
+    });
+    next(err);
+  } finally {
+    req.off("aborted", abortRequest);
+
+    if (incident?.evidenceFiles) {
+      incident.evidenceFiles.length = 0;
+    }
   }
 }

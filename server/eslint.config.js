@@ -10,7 +10,12 @@ export default [
       globals: {
         process: "readonly",
         Buffer: "readonly",
-        console: "readonly"
+        console: "readonly",
+        URL: "readonly",
+        setTimeout: "readonly",
+        clearTimeout: "readonly",
+        AbortController: "readonly",
+        AbortSignal: "readonly"
       }
     },
     rules: {
